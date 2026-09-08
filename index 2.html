@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BIO BATTLE — Биология</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#fff;background:linear-gradient(135deg,#071923,#0b3039 55%,#09251d);min-height:100vh}
+button{font:inherit;cursor:pointer}
+.app{min-height:100vh;padding:22px}
+.screen{display:none;max-width:1250px;margin:auto}.screen.active{display:block}
+.home{min-height:calc(100vh - 44px);display:flex;align-items:center;justify-content:center;text-align:center}
+.card,.panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:28px;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.3);backdrop-filter:blur(10px)}
+.logo{font-size:clamp(48px,8vw,86px);font-weight:900;letter-spacing:4px;margin:0}
+.subtitle{font-size:21px;color:#b9d9dd;margin:10px 0 28px}
+.btn{border:0;border-radius:14px;padding:14px 22px;margin:4px;background:#19c37d;color:#052017;font-weight:800;transition:.18s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn.dark{background:#16343d;color:#fff;border:1px solid #315861}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
+h1{margin:0;font-size:36px}h2{margin:0 0 15px}
+.muted{color:#a9c8cc}.scores{display:flex;gap:8px;flex-wrap:wrap}.score{padding:9px 13px;background:#12343e;border:1px solid #2b5660;border-radius:12px;font-weight:800}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:15px}
+.menu-btn{min-height:125px;text-align:left;padding:22px;border-radius:20px;border:1px solid #315e67;background:linear-gradient(145deg,#143d47,#102b34);color:#fff}
+.menu-btn:hover{border-color:#19c37d;transform:translateY(-2px)}
+.menu-btn b{display:block;font-size:20px;margin-bottom:8px}.menu-btn span{color:#a9c8cc;font-size:14px;line-height:1.4}
+.stage-head{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.team-banner{display:inline-flex;align-items:center;gap:10px;padding:10px 15px;border-radius:13px;background:#12343e;border:1px solid #315e67;font-weight:900}
+.timer{font-variant-numeric:tabular-nums;font-size:24px;font-weight:900;color:#bfffe6}
+.question{font-size:26px;font-weight:800;line-height:1.35;margin:15px 0 22px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.answer{padding:17px;border-radius:15px;border:1px solid #3a636c;background:#12323b;color:#fff;text-align:left}
+.answer:hover{background:#194650}.answer.correct{background:#12664a;border-color:#2ad99a}.answer.wrong{background:#713d43;border-color:#ff7b87}
+.feedback{min-height:30px;margin-top:15px;font-weight:800}
+.nav{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
+.progress{height:8px;background:#18333a;border-radius:10px;overflow:hidden;margin:14px 0 22px}.progress span{display:block;height:100%;background:#19c37d;width:0}
+.clues{display:grid;gap:10px;margin-top:18px}.clue{background:#10303a;border:1px solid #315b64;border-radius:15px;padding:15px;line-height:1.45}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.chain-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}.taskbox{background:#102f38;border:1px solid #315c65;border-radius:20px;padding:22px}
+.chain-items{display:flex;flex-wrap:wrap;gap:10px;min-height:90px;margin:18px 0}.chain-items button{padding:13px 16px;border-radius:13px;border:1px solid #3c646d;background:#163740;color:#fff}.chain-items button.selected{background:#19c37d;color:#052017}
+.order-list{margin-top:15px;display:flex;gap:8px;flex-wrap:wrap}.order-chip{padding:8px 11px;border-radius:10px;background:#0c262e;color:#b9d9dd;border:1px solid #2d545c}
+.match-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.match-box{background:#102f38;border:1px solid #315c65;border-radius:20px;padding:20px}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.match{min-height:80px;padding:12px;border-radius:14px;border:1px solid #39616a;background:#12333c;color:#fff;font-weight:700}.match.selected{outline:3px solid #19c37d}.match.matched{background:#155c47;opacity:.65}
+.final{text-align:center;padding:42px}.winner{font-size:40px;font-weight:900;margin:24px 0}
+.small-note{font-size:13px;color:#8fb7bc;margin-top:8px}
+@media(max-width:760px){.app{padding:11px}.card,.panel{padding:19px}.answers,.choice-grid,.chain-wrap,.match-layout{grid-template-columns:1fr}.match-grid{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start;flex-direction:column}.question{font-size:21px}h1{font-size:29px}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section id="home" class="screen active">
+ <div class="home"><div class="card">
+  <div class="logo">BIO BATTLE</div>
+  <div class="subtitle">Интерактивная игра по биологии</div>
+  <p class="muted">Все задания составлены по материалам предоставленных учебных страниц.</p>
+  <button class="btn" onclick="startGame()">НАЧАТЬ ИГРУ</button>
+ </div></div>
+</section>
+
+<section id="menu" class="screen">
+ <div class="topbar">
+  <div><h1>BIO BATTLE</h1><div class="muted">Выберите этап игры</div></div>
+  <div class="scores">
+   <div class="score">КОМАНДА 1: <span id="s1">0</span></div>
+   <div class="score">КОМАНДА 2: <span id="s2">0</span></div>
+  </div>
+ </div>
+ <div class="menu-grid">
+  <button class="menu-btn" onclick="openStage('test')"><b>Ⅰ ТЕСТ</b><span>20 вопросов: 10 для каждой команды • 10 баллов за ответ</span></button>
+  <button class="menu-btn" onclick="openStage('who')"><b>Ⅱ КТО Я?</b><span>По 3 усложнённых задания для каждой команды • 15 баллов</span></button>
+  <button class="menu-btn" onclick="openStage('chain')"><b>Ⅲ СОБЕРИ ЦЕПОЧКУ</b><span>Два задания на разные темы • порядок фиксируется по нажатию</span></button>
+  <button class="menu-btn" onclick="openStage('match')"><b>Ⅳ СООТНЕСИ</b><span>У каждой команды свой набор • отдельный таймер</span></button>
+  <button class="menu-btn" onclick="openStage('final')"><b>Ⅴ ФИНАЛ</b><span>Новый сложный вопрос по названиям растений</span></button>
+ </div>
+</section>
+
+<section id="test" class="screen">
+ <div class="topbar">
+  <div><h1>Ⅰ ТЕСТ</h1><div class="muted">Каждой команде — 10 вопросов</div></div>
+  <div class="scores"><div class="score">КОМАНДА 1: <span id="ts1">0</span></div><div class="score">КОМАНДА 2: <span id="ts2">0</span></div></div>
+ </div>
+ <div class="panel">
+  <div class="stage-head">
+   <div class="team-banner" id="testTeam"></div>
+   <div class="timer">Время команды: <span id="testTimer">00:00</span></div>
+   <span class="muted" id="testNum"></span>
+  </div>
+  <div class="progress"><span id="progress"></span></div>
+  <div class="question" id="testQ"></div>
+  <div class="answers" id="testA"></div>
+  <div class="feedback" id="testF"></div>
+  <div class="nav"><button class="btn dark" onclick="backMenu()">МЕНЮ</button><button class="btn" id="testNext" onclick="nextTest()" style="display:none">СЛЕДУЮЩИЙ ВОПРОС</button></div>
+ </div>
+</section>
+
+<section id="who" class="screen">
+ <div class="topbar">
+  <div><h1>Ⅱ КТО Я?</h1><div class="muted">Всего 6 заданий: по 3 каждой команде</div></div>
+  <div class="scores"><div class="score">КОМАНДА 1: <span id="ws1">0</span></div><div class="score">КОМАНДА 2: <span id="ws2">0</span></div></div>
+ </div>
+ <div class="panel">
+  <div class="stage-head"><div class="team-banner" id="whoTeam"></div><div class="timer">Время команды: <span id="whoTimer">00:00</span></div><span class="muted" id="whoNum"></span></div>
+  <div class="clues" id="whoClues"></div>
+  <div class="choice-grid" id="whoAnswers"></div>
+  <div class="feedback" id="whoF"></div>
+  <div class="nav"><button class="btn dark" onclick="backMenu()">МЕНЮ</button><button class="btn" id="whoNext" onclick="nextWho()" style="display:none">СЛЕДУЮЩЕЕ ЗАДАНИЕ</button></div>
+ </div>
+</section>
+
+<section id="chain" class="screen">
+ <div class="topbar">
+  <div><h1>Ⅲ СОБЕРИ ЦЕПОЧКУ</h1><div class="muted">Нажатия фиксируют порядок выбранных элементов</div></div>
+ </div>
+ <div class="chain-wrap">
+  <div class="taskbox">
+   <div class="stage-head"><h2>КОМАНДА 1</h2><div class="timer"><span id="chainTimer1">00:00</span></div></div>
+   <div class="muted">Расположите отделы тела насекомого в правильном порядке.</div>
+   <div class="chain-items" id="chain1"></div>
+   <div class="order-list" id="order1"></div>
+   <button class="btn" onclick="checkChain(1)">ПРОВЕРИТЬ</button>
+   <button class="btn dark" onclick="resetChain(1)">СБРОСИТЬ</button>
+   <div class="feedback" id="chainF1"></div>
+  </div>
+  <div class="taskbox">
+   <div class="stage-head"><h2>КОМАНДА 2</h2><div class="timer"><span id="chainTimer2">00:00</span></div></div>
+   <div class="muted">Составьте последовательность развития шляпочного гриба: от споры до плодового тела.</div>
+   <div class="chain-items" id="chain2"></div>
+   <div class="order-list" id="order2"></div>
+   <button class="btn" onclick="checkChain(2)">ПРОВЕРИТЬ</button>
+   <button class="btn dark" onclick="resetChain(2)">СБРОСИТЬ</button>
+   <div class="feedback" id="chainF2"></div>
+  </div>
+ </div>
+ <div class="nav"><button class="btn dark" onclick="backMenu()">МЕНЮ</button></div>
+</section>
+
+<section id="match" class="screen">
+ <div class="topbar"><div><h1>Ⅳ СООТНЕСИ</h1><div class="muted">Две команды получают разные задания</div></div></div>
+ <div class="match-layout">
+  <div class="match-box">
+   <div class="stage-head"><h2>КОМАНДА 1</h2><div class="timer"><span id="matchTimer1">00:00</span></div></div>
+   <div class="muted">Соотнесите термин и его определение. 5 пар.</div>
+   <div class="match-grid" id="matchGrid1"></div>
+   <div class="feedback" id="matchF1"></div>
+  </div>
+  <div class="match-box">
+   <div class="stage-head"><h2>КОМАНДА 2</h2><div class="timer"><span id="matchTimer2">00:00</span></div></div>
+   <div class="muted">Соотнесите термин и его определение. 5 других пар.</div>
+   <div class="match-grid" id="matchGrid2"></div>
+   <div class="feedback" id="matchF2"></div>
+  </div>
+ </div>
+ <div class="nav"><button class="btn dark" onclick="backMenu()">МЕНЮ</button></div>
+</section>
+
+<section id="final" class="screen">
+ <div class="panel final">
+  <div class="muted">Ⅴ ФИНАЛ • НОВЫЙ ВОПРОС</div>
+  <div class="question">Какая группа растений включает камыш, рогоз, папирус, лилии, тюльпаны, подснежники, ландыш, лук, чеснок и спаржу?</div>
+  <div class="answers">
+   <button class="answer" onclick="finalAnswer(this,false)">Двудольные</button>
+   <button class="answer" onclick="finalAnswer(this,true)">Однодольные</button>
+   <button class="answer" onclick="finalAnswer(this,false)">Голосеменные</button>
+   <button class="answer" onclick="finalAnswer(this,false)">Папоротниковидные</button>
+  </div>
+  <div class="feedback" id="finalF"></div>
+  <div class="winner" id="winner"></div>
+  <div class="nav" style="justify-content:center"><button class="btn" onclick="backMenu()">В МЕНЮ</button></div>
+ </div>
+</section>
+
+</div>
+<script>
+"use strict";
+
+let score1=0,score2=0,currentTest=0,testAnswered=false,currentWho=0,whoAnswered=false;
+let chainOrder={1:[],2:[]}, chainChecked={1:false,2:false};
+let matchSelected={1:null,2:null},matchDone={1:0,2:0},matchLocked={1:false,2:false};
+let timers={test:[0,0],who:[0,0],chain:[0,0],match:[0,0]};
+let timerInterval=null,currentStage=null;
+
+const T=[
+["Что изучает систематика?","Классифицирует и распределяет живые организмы по группам",["Изучает только строение клеток","Классифицирует и распределяет живые организмы по группам","Изучает только поведение животных","Изучает химический состав организмов"]],
+["Кто является основоположником современной систематики?","Карл Линней",["Роберт Гук","Луи Пастер","Карл Линней","Рудольф Вирхов"]],
+["Как называется основная систематическая единица?","Вид",["Царство","Тип","Вид","Класс"]],
+["Какая систематическая категория объединяет близкие виды?","Род",["Семейство","Род","Отряд","Тип"]],
+["Какая систематическая категория объединяет роды?","Семейство",["Вид","Класс","Семейство","Царство"]],
+["Какая систематическая категория следует после класса?","Тип",["Род","Семейство","Тип","Царство"]],
+["Кто впервые наблюдал одноклеточные организмы?","Антони ван Левенгук",["Роберт Гук","Антони ван Левенгук","Карл Линней","Луи Пастер"]],
+["Что сделал Роберт Гук?","Впервые исследовал тонкий срез коры растения и назвал наблюдаемые структуры клетками",["Открыл информосому","Впервые исследовал тонкий срез коры растения и назвал наблюдаемые структуры клетками","Создал периодическую таблицу","Основал микробиологию"]],
+["Кто является одним из основоположников клеточной теории?","Теодор Шванн",["Дмитрий Ивановский","Теодор Шванн","Карл Линней","Мурат Айтхожин"]],
+["Что доказал Рудольф Вирхов?","Клетки образуются путём деления исходной клетки",["Клетки образуются путём деления исходной клетки","Растения не имеют клеток","Вирусы являются бактериями","Грибы относятся к растениям"]],
+["Как называется тело водорослей, не разделённое на корень, стебель и лист?","Таллом",["Корневище","Таллом","Побег","Семязачаток"]],
+["Какие растения относятся к высшим споровым?","Моховидные и папоротниковидные",["Только голосеменные","Моховидные и папоротниковидные","Только покрытосеменные","Только водоросли"]],
+["Что появляется у папоротниковидных?","Корневище",["Цветок","Корневище","Плод","Семядоля"]],
+["Какие растения имеют семена, расположенные открыто на семенных чешуях шишек?","Голосеменные",["Мхи","Папоротники","Голосеменные","Покрытосеменные"]],
+["Какой новый орган полового размножения появляется у покрытосеменных?","Цветок",["Корень","Корневище","Цветок","Шишка"]],
+["На какие классы делятся покрытосеменные растения?","Однодольные и двудольные",["Мхи и папоротники","Однодольные и двудольные","Хвойные и лиственные","Водоросли и грибы"]],
+["Сколько семядолей в семени однодольных растений?","Одна",["Одна","Две","Три","Четыре"]],
+["Какая корневая система характерна для двудольных растений?","Стержневая",["Мочковатая","Стержневая","Корневищная","Спорангиевая"]],
+["У однодольных количество лепестков обычно кратно чему?","Двум или трём",["Двум или трём","Четырём или пяти","Только пяти","Только десяти"]],
+["Какой тип жилкования характерен для однодольных растений?","Параллельное или дуговидное",["Сетчатое","Параллельное или дуговидное","Только перистое","Только пальчатое"]]
+];
+
+const WHO=[
+{team:1,clues:["У меня сформированы проводящая и опорная ткани.","Мой подземный орган — видоизменённый побег.","Я размножаюсь спорами.","Споры развиваются в спорангиях."],answer:"Папоротниковидное растение",opts:["Моховидное растение","Папоротниковидное растение","Голосеменное растение","Покрытосеменное растение"]},
+{team:1,clues:["В моём семени только одна семядоля.","Для меня характерна мочковатая корневая система.","Жилкование моих листьев параллельное или дуговидное.","Количество частей моего цветка обычно кратно двум или трём."],answer:"Однодольное растение",opts:["Двудольное растение","Моховидное растение","Однодольное растение","Голосеменное растение"]},
+{team:1,clues:["В моём семени две семядоли.","У меня хорошо выражен главный корень.","Жилкование моих листьев сетчатое.","Количество частей цветка обычно кратно четырём или пяти."],answer:"Двудольное растение",opts:["Однодольное растение","Двудольное растение","Голосеменное растение","Папоротниковидное растение"]},
+{team:2,clues:["Я одноклеточный колониальный гриб.","Могу существовать без кислорода.","Превращаю сахар в спирт и углекислый газ.","Размножаюсь почкованием."],answer:"Дрожжи",opts:["Мукор","Пеницилл","Дрожжи","Шляпочный гриб"]},
+{team:2,clues:["Я высшее растение.","У меня нет корней.","У меня не сформированы проводящая и опорная ткани.","Споры развиваются в спорангиях внутри коробочек."],answer:"Моховидное растение",opts:["Папоротниковидное растение","Моховидное растение","Голосеменное растение","Двудольное растение"]},
+{team:2,clues:["Я позвоночное животное.","Моё тело покрыто перьями.","Передние конечности преобразованы в крылья.","Яйца имеют скорлупу."],answer:"Птица",opts:["Рыба","Земноводное","Птица","Млекопитающее"]}
+];
+
+const C1=["Голова","Грудь","Брюшко"];
+const C2=["Спора","Грибница","Плодовое тело"];
+
+const MATCH={
+1:[
+["Ботаника","Наука о растениях"],
+["Зоология","Наука о животных"],
+["Микология","Наука о грибах"],
+["Таллом","Тело водорослей, не разделённое на корень, стебель и лист"],
+["Корневище","Видоизменённый подземный побег"]
+],
+2:[
+["Голосеменные","Семена открыто расположены на семенных чешуях шишек"],
+["Покрытосеменные","Растения, у которых появляется цветок, а семя защищено плодом"],
+["Однодольные","В семени одна семядоля"],
+["Двудольные","В семени две семядоли"],
+["Млекопитающие","У самок есть молочные железы"]
+]};
+
+function hide(){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"))}
+function show(id){hide();document.getElementById(id).classList.add("active");window.scrollTo(0,0)}
+function startGame(){score1=0;score2=0;currentTest=0;currentWho=0;timers={test:[0,0],who:[0,0],chain:[0,0],match:[0,0]};updateScores();show("menu")}
+function backMenu(){stopTimer();show("menu")}
+function openStage(id){
+ show(id);startStageTimer(id);
+ if(id==="test")renderTest();
+ if(id==="who")renderWho();
+ if(id==="chain")renderChains();
+ if(id==="match")renderMatches();
+}
+function updateScores(){document.querySelectorAll("#s1,#ts1,#ws1").forEach(e=>e.textContent=score1);document.querySelectorAll("#s2,#ts2,#ws2").forEach(e=>e.textContent=score2)}
+function addScore(team,n){if(team===1)score1+=n;else score2+=n;updateScores()}
+function fmt(sec){return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0")}
+function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}currentStage=null}
+function startStageTimer(stage){
+ stopTimer();currentStage=stage;
+ timerInterval=setInterval(()=>{
+  if(stage==="test"){let team=currentTest<10?0:1;timers.test[team]++;document.getElementById("testTimer").textContent=fmt(timers.test[team])}
+  if(stage==="who"){let team=WHO[currentWho].team-1;timers.who[team]++;document.getElementById("whoTimer").textContent=fmt(timers.who[team])}
+  if(stage==="chain"){timers.chain[0]++;timers.chain[1]++;document.getElementById("chainTimer1").textContent=fmt(timers.chain[0]);document.getElementById("chainTimer2").textContent=fmt(timers.chain[1])}
+  if(stage==="match"){if(!matchLocked[1]){timers.match[0]++;document.getElementById("matchTimer1").textContent=fmt(timers.match[0])}if(!matchLocked[2]){timers.match[1]++;document.getElementById("matchTimer2").textContent=fmt(timers.match[1])}}
+ },1000);
+}
+
+function renderTest(){
+ testAnswered=false;const q=T[currentTest],team=currentTest<10?1:2;
+ document.getElementById("testTeam").textContent="ХОД КОМАНДЫ "+team;
+ document.getElementById("testNum").textContent="ВОПРОС "+(currentTest%10+1)+" ИЗ 10";
+ document.getElementById("testTimer").textContent=fmt(timers.test[team-1]);
+ document.getElementById("progress").style.width=((currentTest%10+1)/10*100)+"%";
+ document.getElementById("testQ").textContent=q[0];document.getElementById("testF").textContent="";document.getElementById("testNext").style.display="none";
+ const box=document.getElementById("testA");box.innerHTML="";
+ q[2].forEach(a=>{const b=document.createElement("button");b.className="answer";b.textContent=a;b.onclick=()=>answerTest(b,a===q[1],team);box.appendChild(b)})
+}
+function answerTest(btn,ok,team){
+ if(testAnswered)return;testAnswered=true;document.querySelectorAll("#testA .answer").forEach(b=>b.disabled=true);
+ if(ok){btn.classList.add("correct");addScore(team,10);document.getElementById("testF").textContent="✓ Правильно! +10 баллов"}
+ else{btn.classList.add("wrong");document.getElementById("testF").textContent="✗ Неверно. Правильный ответ: "+T[currentTest][1]}
+ document.getElementById("testNext").style.display="inline-block"
+}
+function nextTest(){currentTest++;if(currentTest>=20){stopTimer();show("menu");return}renderTest()}
+
+function renderWho(){
+ whoAnswered=false;const q=WHO[currentWho],team=q.team;
+ document.getElementById("whoTeam").textContent="ХОД КОМАНДЫ "+team;
+ document.getElementById("whoNum").textContent="ЗАДАНИЕ "+(currentWho%3+1)+" ИЗ 3";
+ document.getElementById("whoTimer").textContent=fmt(timers.who[team-1]);
+ document.getElementById("whoF").textContent="";document.getElementById("whoNext").style.display="none";
+ document.getElementById("whoClues").innerHTML=q.clues.map((x,i)=>`<div class="clue"><b>Признак ${i+1}:</b> ${x}</div>`).join("");
+ const box=document.getElementById("whoAnswers");box.innerHTML="";
+ q.opts.forEach(a=>{const b=document.createElement("button");b.className="answer";b.textContent=a;b.onclick=()=>answerWho(b,a===q.answer);box.appendChild(b)})
+}
+function answerWho(btn,ok){
+ if(whoAnswered)return;whoAnswered=true;document.querySelectorAll("#whoAnswers .answer").forEach(b=>b.disabled=true);
+ const team=WHO[currentWho].team;
+ if(ok){btn.classList.add("correct");addScore(team,15);document.getElementById("whoF").textContent="✓ Правильно! +15 баллов"}
+ else{btn.classList.add("wrong");document.getElementById("whoF").textContent="✗ Правильный ответ: "+WHO[currentWho].answer}
+ document.getElementById("whoNext").style.display="inline-block"
+}
+function nextWho(){currentWho++;if(currentWho>=WHO.length){stopTimer();show("menu");return}renderWho()}
+
+function fillChain(team,items){
+ const box=document.getElementById("chain"+team);box.innerHTML="";chainOrder[team]=[];chainChecked[team]=false;
+ [...items].sort(()=>Math.random()-.5).forEach(x=>{
+  const b=document.createElement("button");b.textContent=x;b.dataset.v=x;
+  b.onclick=()=>{
+   if(chainChecked[team])return;
+   const idx=chainOrder[team].indexOf(x);
+   if(idx===-1){chainOrder[team].push(x);b.classList.add("selected")}
+   else{chainOrder[team].splice(idx,1);b.classList.remove("selected")}
+   renderOrder(team)
+  };box.appendChild(b)
+ })
+}
+function renderOrder(team){document.getElementById("order"+team).innerHTML=chainOrder[team].map((x,i)=>`<span class="order-chip">${i+1}. ${x}</span>`).join("")}
+function renderChains(){fillChain(1,C1);fillChain(2,C2);document.getElementById("chainF1").textContent="";document.getElementById("chainF2").textContent=""}
+function resetChain(team){fillChain(team,team===1?C1:C2);document.getElementById("chainF"+team).textContent=""}
+function checkChain(team){
+ if(chainChecked[team])return;
+ const expected=team===1?C1:C2,sel=chainOrder[team],ok=sel.length===expected.length&&sel.every((x,i)=>x===expected[i]);
+ if(ok){chainChecked[team]=true;addScore(team,20);document.getElementById("chainF"+team).textContent="✓ Правильно! +20 баллов";document.querySelectorAll("#chain"+team+" button").forEach(b=>b.disabled=true)}
+ else document.getElementById("chainF"+team).textContent="✗ Порядок неверный. Выбранный порядок показан ниже — можно исправить.";
+}
+
+function renderMatches(){
+ matchSelected={1:null,2:null};matchDone={1:0,2:0};matchLocked={1:false,2:false};
+ [1,2].forEach(team=>{
+  const box=document.getElementById("matchGrid"+team);box.innerHTML="";document.getElementById("matchF"+team).textContent="";
+  const cards=[];MATCH[team].forEach((p,i)=>{cards.push({id:i,type:"term",text:p[0]});cards.push({id:i,type:"def",text:p[1]})});
+  cards.sort(()=>Math.random()-.5);
+  cards.forEach(c=>{const b=document.createElement("button");b.className="match";b.textContent=c.text;b.dataset.id=c.id;b.dataset.type=c.type;b.onclick=()=>selectMatch(team,b,c);box.appendChild(b)})
+  document.getElementById("matchTimer"+team).textContent=fmt(timers.match[team-1]);
+ })
+}
+function selectMatch(team,btn,c){
+ if(matchLocked[team]||btn.classList.contains("matched"))return;
+ if(!matchSelected[team]){matchSelected[team]={btn,c};btn.classList.add("selected");return}
+ const first=matchSelected[team];
+ if(first.c.id===c.id&&first.c.type!==c.type){
+  first.btn.classList.remove("selected");first.btn.classList.add("matched");btn.classList.add("matched");matchDone[team]++;
+  document.getElementById("matchF"+team).textContent=matchDone[team]===MATCH[team].length?"✓ Все пары найдены! +20 баллов":"✓ Правильная пара";
+  if(matchDone[team]===MATCH[team].length){matchLocked[team]=true;addScore(team,20)}
+ }else{
+  first.btn.classList.remove("selected");document.getElementById("matchF"+team).textContent="✗ Неверная пара";
+ }
+ matchSelected[team]=null
+}
+
+function finalAnswer(btn,ok){
+ document.querySelectorAll("#final .answer").forEach(b=>b.disabled=true);
+ if(ok){btn.classList.add("correct");document.getElementById("finalF").textContent="✓ Правильно! +30 баллов";score1+=30;score2+=30}
+ else{btn.classList.add("wrong");document.getElementById("finalF").textContent="✗ Правильный ответ: Однодольные"}
+ updateScores();
+ document.getElementById("winner").textContent=score1>score2?"ПОБЕДИЛА КОМАНДА 1!":score2>score1?"ПОБЕДИЛА КОМАНДА 2!":"НИЧЬЯ!";
+}
+</script>
+</body>
+</html>
